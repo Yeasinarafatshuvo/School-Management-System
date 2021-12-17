@@ -10,7 +10,7 @@ class UserController extends Controller
     //This function is for retrieve user data from db and view it a blade page
     public function UserView()
     {
-        $data['userAllData'] = User::all();
+        $data['userAllData'] = User::where('usertype', 'Admin')->get();
         return view('backend.user.view_user', $data);
     }
 
@@ -32,10 +32,13 @@ class UserController extends Controller
 
         //create instance of user and save data to db
         $userData = new User();
-        $userData->usertype = $request->usertype;
+        $code = rand(0000,9999);
+        $userData->usertype = 'Admin';
+        $userData->role = $request->role;
         $userData->name = $request->name;
         $userData->email = $request->email;
-        $userData->password = bcrypt($request->password);
+        $userData->password = bcrypt($code);
+        $userData->code = $code;
         $userData->save();
 
         $notification = array(
@@ -58,9 +61,9 @@ class UserController extends Controller
     {
         //create instance of user and save data to db
         $updateUserData =User::find($id);
-        $updateUserData->usertype = $request->usertype;
         $updateUserData->name = $request->name;
         $updateUserData->email = $request->email;
+        $userData->role = $request->role;
         $updateUserData->save();
 
         //set toastr message after finishing successful action
